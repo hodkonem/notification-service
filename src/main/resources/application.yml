@@ -1,0 +1,31 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: notification-service
+
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: notification-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "ru.itwizardry.notificationservice"
+        spring.json.value.default.type: "ru.itwizardry.notificationservice.dto.UserEventDto"
+        spring.json.use.type.headers: false
+
+app:
+  kafka:
+    topic: ${USER_EVENTS_TOPIC:user.notifications}
+  mail:
+    from: noreply@itwizardry.local
