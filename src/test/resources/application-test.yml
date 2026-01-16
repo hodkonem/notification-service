@@ -1,0 +1,14 @@
+app:
+  kafka:
+    enabled: false
+
+spring:
+  kafka:
+    listener:
+      auto-startup: false
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: true
