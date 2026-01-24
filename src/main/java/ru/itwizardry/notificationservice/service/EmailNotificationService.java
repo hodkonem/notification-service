@@ -7,6 +7,10 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import ru.itwizardry.notificationservice.dto.UserEventDto;
+import ru.itwizardry.notificationservice.dto.UserOperation;
+
+import static ru.itwizardry.notificationservice.dto.UserOperation.CREATED;
+import static ru.itwizardry.notificationservice.dto.UserOperation.DELETED;
 
 @Slf4j
 @Service
@@ -19,16 +23,21 @@ public class EmailNotificationService {
     private String from;
 
     public void sendForUserEvent(UserEventDto event) {
-        String to = event != null ? event.email() : null;
-        String op = event != null ? event.operation() : null;
+        if (event == null) {
+            log.warn("Email send skipped. channel=KAFKA reason=null_event");
+            return;
+        }
+
+        String to = event.email();
+        UserOperation op = event.operation();
 
         if (isBlank(to)) {
-            log.warn("Email send skipped. channel=KAFKA reason=missing_email event={}", event);
+            log.warn("Email send skipped. channel=KAFKA reason=missing_email op={}", safe(op));
             return;
         }
 
         String subject = "Уведомление";
-        String text = buildText(op);
+        String text = buildText(event);
 
         try {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -42,7 +51,7 @@ public class EmailNotificationService {
             log.info("Email sent. channel=KAFKA op={} to={}", safe(op), mask(to));
         } catch (Exception ex) {
             log.error("Email send failed. channel=KAFKA op={} to={}", safe(op), mask(to), ex);
-            throw ex;
+            throw new IllegalStateException("Email send failed", ex);
         }
     }
 
@@ -69,18 +78,18 @@ public class EmailNotificationService {
             log.info("Email sent. channel=REST to={} subject={}", mask(email), subject);
         } catch (Exception ex) {
             log.error("Email send failed. channel=REST to={} subject={}", mask(email), subject, ex);
-            throw ex;
+            throw new IllegalStateException("Email send failed", ex);
         }
     }
 
-    private String buildText(String operation) {
-        if ("DELETED".equalsIgnoreCase(operation)) {
+    private String buildText(UserEventDto event) {
+        if (event.operation() == DELETED) {
             return "Здравствуйте! Ваш аккаунт был удалён.";
         }
-        if ("CREATED".equalsIgnoreCase(operation)) {
-            return "Здравствуйте! Ваш аккаунт был успешно создан.";
+        if (event.operation() == CREATED) {
+            return "Здравствуйте! Ваш аккаунт на сайте был успешно создан.";
         }
-        return "Здравствуйте! Получено уведомление об операции: " + safe(operation);
+        return "Здравствуйте!";
     }
 
     private boolean isBlank(String s) {
@@ -94,7 +103,7 @@ public class EmailNotificationService {
         return email.charAt(0) + "***" + email.substring(at);
     }
 
-    private String safe(String value) {
-        return value != null ? value : "UNKNOWN";
+    private String safe(UserOperation op) {
+        return op != null ? op.name() : "UNKNOWN";
     }
 }
