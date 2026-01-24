@@ -16,6 +16,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import ru.itwizardry.notificationservice.dto.UserEventDto;
+import ru.itwizardry.notificationservice.dto.UserOperation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,7 +54,7 @@ class NotificationKafkaIT {
 
     @Test
     void shouldSendEmailWhenKafkaEventReceived() throws Exception {
-        var event = new UserEventDto("CREATED", "mike@test.local");
+        var event = new UserEventDto(UserOperation.CREATED, "mike@test.local");
 
         kafkaTemplate.send(TOPIC, event.email(), event).get();
 
