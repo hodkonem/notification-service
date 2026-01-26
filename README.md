@@ -20,41 +20,60 @@
 
 ---
 
-## 🚀 Quick Start
+## 🐳 Local development (Docker)
 
-### 1. Запуск инфраструктуры
-Поднимает Kafka, MailHog и Kafka UI:
+### Общая идея
 
+`notification-service` может работать в двух режимах инфраструктуры:
+
+- использовать **общую Kafka**, поднятую из `user-service` (рекомендуется для локальной разработки);
+- поднимать **собственную Kafka** (standalone-режим).
+
+Оба варианта поддерживаются через `docker-compose` и профили.
+
+---
+
+### Option A — shared Kafka from `user-service` (recommended)
+
+1. Запусти Kafka в `user-service`:
 ```bash
 docker compose up -d
 ```
 
----
-
-### 2. Прогон тестов
-
+2. Запусти инфраструктуру `notification-service`:
 ```bash
-./gradlew clean test
+docker compose up -d
 ```
 
-Включает:
-- интеграционные тесты Kafka (Testcontainers)
-- интеграционные тесты отправки email (GreenMail)
-- REST API тесты
-
----
-
-### 3. Запуск приложения
-
-#### Вариант A: через Gradle
+3. Запусти приложение:
 ```bash
 SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
 ```
 
-#### Вариант B: через IntelliJ IDEA
-- Run → Edit Configurations
-- Active profiles: `dev`
-- Run `NotificationServiceApplication`
+Используемые переменные окружения:
+```env
+KAFKA_BOOTSTRAP_SERVERS=localhost:9092
+USER_EVENTS_TOPIC=user.notifications
+```
+
+---
+
+### Option B — standalone Kafka (infra profile)
+
+```bash
+docker compose --profile infra up -d
+SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
+```
+
+---
+
+## 🚀 Quick Start
+
+### Прогон тестов
+
+```bash
+./gradlew clean test
+```
 
 ---
 
@@ -66,50 +85,18 @@ SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
 | MailHog (SMTP)       | 1025 |
 | MailHog (Web UI)     | 8025 |
 | Kafka                | 9092 |
-| Kafka UI             | 8089 |
-
----
-
-## 🔗 Полезные ссылки (локально)
-
-> Доступны после запуска `docker compose up -d` и приложения
-
-- **Swagger UI (только профиль `dev`)**  
-  http://localhost:8085/swagger-ui
-
-- **MailHog UI (просмотр писем)**  
-  http://localhost:8025
-
-- **Kafka UI**  
-  http://localhost:8089
 
 ---
 
 ## 📬 REST API
 
-### Отправка email вручную
-
 `POST /api/v1/notifications/email`
-
-Пример запроса:
-```bash
-curl -X POST http://localhost:8085/api/v1/notifications/email \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@test.local",
-    "subject": "Hello",
-    "text": "Message from notification-service"
-  }'
-```
-
-Ответ: `202 Accepted`
 
 ---
 
 ## 📡 Kafka режим
 
-Микросервис подписывается на Kafka-топик:
-
+Топик:
 ```
 user.notifications
 ```
@@ -122,34 +109,17 @@ user.notifications
 }
 ```
 
-Поддерживаемые операции:
-- `CREATED` — аккаунт создан
-- `DELETED` — аккаунт удалён
-
----
-
-## 🧪 Тестирование
-
-Используются:
-- **Testcontainers** — Kafka
-- **GreenMail** — SMTP
-- **MockMvc** — REST API
-
-Kafka listener и Swagger UI **отключаются в тестовом профиле**, что делает тесты стабильными и изолированными.
-
 ---
 
 ## ⚙️ Профили
 
-| Профиль   | Назначение |
-|----------|------------|
-| `default` | обычный запуск |
-| `dev`     | Swagger UI включён |
-| `test`    | Kafka и Swagger выключены |
-| `kafka-it`| интеграционные Kafka-тесты |
+| Профиль | Назначение |
+|-------|-----------|
+| dev | Swagger UI |
+| test | Kafka off |
 
 ---
 
 ## 📎 Связанные проекты
 
-- `user-service` — сервис управления пользователями (источник событий)
+- https://github.com/hodkonem/user-service
