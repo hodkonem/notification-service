@@ -1,5 +1,5 @@
 server:
-  port: 8085
+  port: ${NOTIFICATION_SERVICE_PORT:8085}
 
 spring:
   application:
@@ -13,6 +13,7 @@ spring:
       mail.smtp.starttls.enable: false
 
   kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: notification-service
       auto-offset-reset: earliest
@@ -22,5 +23,6 @@ spring:
 app:
   kafka:
     topic: ${USER_EVENTS_TOPIC:user.notifications}
+    enabled: ${APP_KAFKA_ENABLED:true}
   mail:
-    from: noreply@itwizardry.local
+    from: ${MAIL_FROM:noreply@itwizardry.local}
