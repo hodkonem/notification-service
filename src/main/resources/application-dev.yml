@@ -1,7 +1,0 @@
-springdoc:
-  swagger-ui:
-    path: /swagger-ui
-    operationsSorter: method
-    tagsSorter: alpha
-  api-docs:
-    path: /v3/api-docs
