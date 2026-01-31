@@ -1,43 +1,12 @@
-spring:
-  cloud:
-    config:
-      enabled: false
-
-  config:
-    import: ""
-
+app:
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    enabled: true
 
-    consumer:
-      group-id: notification-service
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
+spring:
+  kafka:
     listener:
       auto-startup: true
-
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-  mail:
-    host: ${MAIL_HOST:localhost}
-    port: ${MAIL_PORT:1025}
-    properties:
-      mail.smtp.auth: false
-      mail.smtp.starttls.enable: false
-
-app:
-  kafka:
-    enabled: true
-    topic: ${USER_EVENTS_TOPIC:user.notifications}
-  mail:
-    from: noreply@itwizardry.local
-
-springdoc:
-  swagger-ui:
-    enabled: false
-  api-docs:
-    enabled: false

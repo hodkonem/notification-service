@@ -1,11 +1,26 @@
+server:
+  port: 8085
+
 spring:
   application:
     name: notification-service
 
-  config:
-    import: optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
 
-  cloud:
-    config:
-      fail-fast: false
-      label: develop
+  kafka:
+    consumer:
+      group-id: notification-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+app:
+  kafka:
+    topic: ${USER_EVENTS_TOPIC:user.notifications}
+  mail:
+    from: noreply@itwizardry.local
