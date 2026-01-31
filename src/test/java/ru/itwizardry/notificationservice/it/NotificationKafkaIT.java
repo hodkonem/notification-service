@@ -50,7 +50,7 @@ class NotificationKafkaIT {
     }
 
     @Autowired
-    KafkaTemplate<String, UserEventDto> kafkaTemplate;
+    private KafkaTemplate<String, UserEventDto> kafkaTemplate;
 
     @Test
     void shouldSendEmailWhenKafkaEventReceived() throws Exception {
