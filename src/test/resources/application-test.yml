@@ -3,9 +3,30 @@ spring:
     config:
       enabled: false
 
+  config:
+    import: ""
+
   kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notification-service
+      auto-offset-reset: earliest
+
     listener:
       auto-startup: false
+
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
+
+app:
+  kafka:
+    topic: user.notifications
+  mail:
+    from: noreply@itwizardry.local
 
 springdoc:
   swagger-ui:
