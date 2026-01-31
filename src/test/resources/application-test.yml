@@ -1,8 +1,8 @@
-app:
-  kafka:
-    enabled: false
-
 spring:
+  cloud:
+    config:
+      enabled: false
+
   kafka:
     listener:
       auto-startup: false
@@ -10,5 +10,3 @@ spring:
 springdoc:
   swagger-ui:
     enabled: false
-  api-docs:
-    enabled: true
