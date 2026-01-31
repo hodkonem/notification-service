@@ -8,10 +8,6 @@ spring:
 
   kafka:
     bootstrap-servers: localhost:9092
-    consumer:
-      group-id: notification-service
-      auto-offset-reset: earliest
-
     listener:
       auto-startup: false
 
@@ -24,10 +20,13 @@ spring:
 
 app:
   kafka:
+    enabled: false
     topic: user.notifications
   mail:
     from: noreply@itwizardry.local
 
 springdoc:
   swagger-ui:
+    enabled: false
+  api-docs:
     enabled: false

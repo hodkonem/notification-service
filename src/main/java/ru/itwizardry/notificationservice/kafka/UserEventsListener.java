@@ -18,10 +18,7 @@ public class UserEventsListener {
     private final EmailNotificationService emailService;
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(
-            topics = "${app.kafka.topic:user.notifications}",
-            groupId = "${spring.kafka.consumer.group-id:notification-service}"
-    )
+    @KafkaListener(topics = "${app.kafka.topic:user.notifications}")
     public void onMessage(String payload) {
         try {
             UserEventDto event = objectMapper.readValue(payload, UserEventDto.class);
