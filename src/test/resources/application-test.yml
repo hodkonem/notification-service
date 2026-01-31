@@ -1,14 +1,32 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+
+  config:
+    import: ""
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    listener:
+      auto-startup: false
+
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
+
 app:
   kafka:
     enabled: false
-
-spring:
-  kafka:
-    listener:
-      auto-startup: false
+    topic: user.notifications
+  mail:
+    from: noreply@itwizardry.local
 
 springdoc:
   swagger-ui:
     enabled: false
   api-docs:
-    enabled: true
+    enabled: false
